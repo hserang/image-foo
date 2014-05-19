@@ -1,0 +1,30 @@
+{
+  "name": "amd_marionette",
+  "version": "0.0.1",
+  "homepage": "https://github.com/hserang/amd_marionette",
+  "authors": [
+    "Haroun Serang <hserang@gmail.com>"
+  ],
+  "description": "libs for our little boot",
+  "main": "main.js",
+  "moduleType": [
+    "amd",
+    "es6"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "~2.1.11",
+    "lodash": "~2.4.1",
+    "jquery": "~2.1.1",
+    "marionette": "~1.8.5",
+    "backbone-amd": "~1.1.0"
+  }
+}
