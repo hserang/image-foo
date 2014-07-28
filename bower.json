@@ -1,7 +1,7 @@
 {
-  "name": "amd_marionette",
+  "name": "image-foo",
   "version": "0.0.1",
-  "homepage": "https://github.com/hserang/amd_marionette",
+  "homepage": "https://github.com/hserang/image-foo",
   "authors": [
     "Haroun Serang <hserang@gmail.com>"
   ],
@@ -24,7 +24,6 @@
     "requirejs": "~2.1.11",
     "lodash": "~2.4.1",
     "jquery": "~2.1.1",
-    "marionette": "~1.8.5",
     "backbone-amd": "~1.1.0"
   }
 }

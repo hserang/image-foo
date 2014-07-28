@@ -1,21 +1,21 @@
 {
-  "name": "amd_marionette",
+  "name": "image-foo",
   "version": "0.0.1",
-  "description": "AMD Bootstrap for Marionette",
+  "description": "Messing with images and canvas",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/hserang/amd_marionette.git"
+    "url": "git://github.com/hserang/image-foo.git"
   },
   "author": "Haroun Serang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hserang/amd_marionette/issues"
+    "url": "https://github.com/hserang/image-foo/issues"
   },
-  "homepage": "https://github.com/hserang/amd_marionette",
+  "homepage": "https://github.com/hserang/image-foo",
   "dependencies": {
     "bower": "^1.3.3",
     "grunt": "^0.4.5"

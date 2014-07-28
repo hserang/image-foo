@@ -1,11 +1,9 @@
-amd_marionette
+Image Foo
 ==============
 
-AMD Bootstrap with Require, Backbone and Marionette
+Messing with Images and Canvas using backbone
 
 # WIP #
-
-Docs pending
 
 Requirements:
 Node.js, Bower.io, Grunt
