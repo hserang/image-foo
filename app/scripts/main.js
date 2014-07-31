@@ -12,5 +12,12 @@ requirejs(
   function(App) {
     "use strict";
 
+    //Move this to an external module
+    $(document).on("dragenter dragover drop", function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
+    //boot the app
     new App().init();
 });
