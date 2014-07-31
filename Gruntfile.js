@@ -8,6 +8,21 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
+    sass: {
+      dist: {
+        files: {
+          'app/build/styles/app.css': 'app/styles/app.scss'
+        }
+      },
+      dev: {
+        options: {
+          sourceMap: true
+        },
+        files: {
+          'app/build/styles/app.css': 'app/styles/app.scss'
+        }
+      }
+    },
     requirejs: {
       compile: {
         options: {
@@ -25,8 +40,8 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['app/scripts/**/*.js', 'Gruntfile.js', 'app/**/*.html'],
-        tasks: ['requirejs'],
+        files: ['app/scripts/**/*.js', 'Gruntfile.js', 'app/**/*.html', 'app/**/*.scss'],
+        tasks: ['requirejs', 'sass'],
         options: {
           livereload: {
             port: 35729,
@@ -38,7 +53,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', ['requirejs', 'watch']);
+  grunt.registerTask('default', ['requirejs', 'watch', 'sass']);
 
   //not working yet
   grunt.registerTask('jshint', ['jshint']);
