@@ -22,8 +22,7 @@ define(
         this.initDomEvents();
 
         //data structure to hold our results
-        this.counts = {};
-        this.iteration = 0;
+        this.counts = [];
       },
 
       handleDrop: function(e) {
@@ -69,12 +68,15 @@ define(
 
       },
 
+      // traverse array, comparing all cels (array index * 4)
+      // in each step check adjacent pixels and compare color
+      // use a loop to prevent stack/memory issues
       checkContiguous: function(r, g, b, a) {
         var pixelStack = [[startX, startY]],
             newPos, x, y, pixelPos, reachLeft, reachRight;
 
-        this.iteration ++;
-
+        // create array of position that we will use to anchor our traversals
+        // we will update the stack as we traverse to the next x,y to test
         while (pixelStack.length) {
           newPos = pixelStack.pop();
           x = newPos[0];
@@ -82,48 +84,50 @@ define(
 
           pixelPos = (y * this.canvasWidth + x) * 4;
 
-          while (y >= drawingBoundTop && this.matchColor(prevColor, curColor)) {
-            y -= 1;
-            pixelPos -= canvasWidth * 4;
-          }
+          // this is non-working frankencode
+          // skeletons of ideas
+          //while (y >= drawingBoundTop && this.matchColor(prevColor, curColor)) {
+            //y -= 1;
+            //pixelPos -= canvasWidth * 4;
+          //}
 
-          pixelPos += canvasWidth *4;
-          y += 1;
+          //pixelPos += canvasWidth *4;
+          //y += 1;
 
-          reachLeft = false;
-          reachRight = false;
+          //reachLeft = false;
+          //reachRight = false;
 
-          while (y <= drawingBoundBottom && matchStartColor(pixelPos, startR, startG, startB)) {
-            y += 1;
+          //while (y <= drawingBoundBottom && matchStartColor(pixelPos, startR, startG, startB)) {
+            //y += 1;
 
-            this.countColor(pixelPos, {color: {r:startR, g:startG, b:startB}});
+            //this.countColor(pixelPos, {color: {r:startR, g:startG, b:startB}});
 
-            if (x > drawingBoundLeft) {
-              if (matchStartColor(pixelPos - 4, startR, startG, startB)) {
-                if (!reachLeft) {
-                  // Add pixel to stack
-                  pixelStack.push([x - 1, y]);
-                  reachLeft = true;
-                }
-              } else if (reachLeft) {
-                reachLeft = false;
-              }
-            }
+            //if (x > drawingBoundLeft) {
+              //if (matchStartColor(pixelPos - 4, startR, startG, startB)) {
+                //if (!reachLeft) {
+                  //// Add pixel to stack
+                  //pixelStack.push([x - 1, y]);
+                  //reachLeft = true;
+                //}
+              //} else if (reachLeft) {
+                //reachLeft = false;
+              //}
+            //}
 
-            if (x < drawingBoundRight) {
-              if (matchStartColor(pixelPos + 4, startR, startG, startB)) {
-                if (!reachRight) {
-                  // Add pixel to stack
-                  pixelStack.push([x + 1, y]);
-                  reachRight = true;
-                }
-              } else if (reachRight) {
-                reachRight = false;
-              }
-            }
+            //if (x < drawingBoundRight) {
+              //if (matchStartColor(pixelPos + 4, startR, startG, startB)) {
+                //if (!reachRight) {
+                  //// Add pixel to stack
+                  //pixelStack.push([x + 1, y]);
+                  //reachRight = true;
+                //}
+              //} else if (reachRight) {
+                //reachRight = false;
+              //}
+            //}
 
-            pixelPos += canvasWidth * 4;
-        }
+            //pixelPos += canvasWidth * 4;
+        //}
 
         }
       },
@@ -133,6 +137,7 @@ define(
       countColor: function(pass, rgbData) {
       },
 
+      // test if colors match return bool
       matchColor: function() {
       },
 
