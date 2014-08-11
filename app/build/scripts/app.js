@@ -17836,6 +17836,7 @@ define("jquery", function(){});
 define(
   'scripts/app',["backbone"],
   function(Backbone) {
+
     
 
     var App = function() {
@@ -17848,11 +17849,16 @@ define(
       },
 
       init: function() {
+        _.bindAll(this, "mungeImageData");
+
         this.$el = $("#image-analyzer-wrapper");
 
         // init dom
         this.setBindings();
         this.initDomEvents();
+
+        //data structure to hold our results
+        this.counts = [];
       },
 
       handleDrop: function(e) {
@@ -17860,7 +17866,7 @@ define(
         e.preventDefault();
 
         //todo: handle error and edge cases
-        var file = e.originalEvent.dataTransfer.files[0];
+        var file = e.originalEvent.dataTransfer.files[0],
             img = new Image(),
             fileReader = new FileReader(),
             $targ = $(e.target),
@@ -17890,11 +17896,106 @@ define(
         this.mungeImageData(imageData);
       },
 
-      mungeImageData: function(imageData) {
-        var height = imageData.height,
-            width = imageData.width,
-            stack = [[0, 0]];
+      loopData: function(height, width, cb) {
+        var i, j;
 
+        for (i=0; i<height; i++) {
+          for (j=0; j<width; j++) {
+            cb(i, j);
+          }
+        }
+      },
+
+      // setup our traversal iterations
+      mungeImageData: function(imageData) {
+        var data = imageData.data,
+            canvasHeight = imageData.height,
+            canvasWidth = imageData.width,
+            cel;
+
+
+        this.loopData(canvasHeight, canvasWidth, function(height, width) {
+          var cel = (width * canvasHeight + canvasWidth) * 4,
+              right = cel + 4,
+              left = cel - 4,
+              top = cel - width,
+              bottom = cel + width;
+
+          console.log("foo", cel);
+        });
+      },
+
+      // traverse array, comparing all cels (array index * 4)
+      // in each step check adjacent pixels and compare color
+      // use a loop to prevent stack/memory issues
+      checkContiguous: function(r, g, b, a) {
+        var pixelStack = [[startX, startY]],
+            newPos, x, y, pixelPos, reachLeft, reachRight;
+
+        // create array of position that we will use to anchor our traversals
+        // we will update the stack as we traverse to the next x,y to test
+        while (pixelStack.length) {
+          newPos = pixelStack.pop();
+          x = newPos[0];
+          y = newPos[1];
+
+          pixelPos = (y * this.canvasWidth + x) * 4;
+
+          // this is non-working frankencode
+          // skeletons of ideas
+          //while (y >= drawingBoundTop && this.matchColor(prevColor, curColor)) {
+            //y -= 1;
+            //pixelPos -= canvasWidth * 4;
+          //}
+
+          //pixelPos += canvasWidth *4;
+          //y += 1;
+
+          //reachLeft = false;
+          //reachRight = false;
+
+          //while (y <= drawingBoundBottom && matchStartColor(pixelPos, startR, startG, startB)) {
+            //y += 1;
+
+            //this.countColor(pixelPos, {color: {r:startR, g:startG, b:startB}});
+
+            //if (x > drawingBoundLeft) {
+              //if (matchStartColor(pixelPos - 4, startR, startG, startB)) {
+                //if (!reachLeft) {
+                  //// Add pixel to stack
+                  //pixelStack.push([x - 1, y]);
+                  //reachLeft = true;
+                //}
+              //} else if (reachLeft) {
+                //reachLeft = false;
+              //}
+            //}
+
+            //if (x < drawingBoundRight) {
+              //if (matchStartColor(pixelPos + 4, startR, startG, startB)) {
+                //if (!reachRight) {
+                  //// Add pixel to stack
+                  //pixelStack.push([x + 1, y]);
+                  //reachRight = true;
+                //}
+              //} else if (reachRight) {
+                //reachRight = false;
+              //}
+            //}
+
+            //pixelPos += canvasWidth * 4;
+        //}
+
+        }
+      },
+
+      // push cel counts and rgb data into an object
+      // we will index by pass#
+      countColor: function(pass, rgbData) {
+      },
+
+      // test if colors match return bool
+      matchColor: function() {
       },
 
       getCanvasContext: function(width, height) {

@@ -3,6 +3,7 @@
 define(
   ["backbone"],
   function(Backbone) {
+
     "use strict";
 
     var App = function() {
@@ -15,6 +16,8 @@ define(
       },
 
       init: function() {
+        _.bindAll(this, "mungeImageData");
+
         this.$el = $("#image-analyzer-wrapper");
 
         // init dom
@@ -30,7 +33,7 @@ define(
         e.preventDefault();
 
         //todo: handle error and edge cases
-        var file = e.originalEvent.dataTransfer.files[0];
+        var file = e.originalEvent.dataTransfer.files[0],
             img = new Image(),
             fileReader = new FileReader(),
             $targ = $(e.target),
@@ -60,12 +63,33 @@ define(
         this.mungeImageData(imageData);
       },
 
+      loopData: function(height, width, cb) {
+        var i, j;
+
+        for (i=0; i<height; i++) {
+          for (j=0; j<width; j++) {
+            cb(i, j);
+          }
+        }
+      },
+
       // setup our traversal iterations
       mungeImageData: function(imageData) {
-        this.canvasHeight = imageData.height;
-        this.canvasWidth = imageData.width;
+        var data = imageData.data,
+            canvasHeight = imageData.height,
+            canvasWidth = imageData.width,
+            cel;
 
 
+        this.loopData(canvasHeight, canvasWidth, function(height, width) {
+          var cel = (width * canvasHeight + canvasWidth) * 4,
+              right = cel + 4,
+              left = cel - 4,
+              top = cel - width,
+              bottom = cel + width;
+
+          console.log("foo", cel);
+        });
       },
 
       // traverse array, comparing all cels (array index * 4)
