@@ -17849,7 +17849,7 @@ define(
       },
 
       init: function() {
-        _.bindAll(this, "mungeImageData");
+        _.bindAll(this, "mungeImageData", "loopData");
 
         this.$el = $("#image-analyzer-wrapper");
 
@@ -17896,106 +17896,77 @@ define(
         this.mungeImageData(imageData);
       },
 
-      loopData: function(height, width, cb) {
+      loopData: function(width, height, cb) {
         var i, j;
 
-        for (i=0; i<height; i++) {
-          for (j=0; j<width; j++) {
+        for (i=0; i<width; i++) {
+          for (j=0; j<height; j++) {
             cb(i, j);
           }
         }
       },
 
+      isContiguous: function() {
+      },
+
+      //express rgb as single binary given the x y
+      getColor: function(imageData, x, y) {
+        var data = imageData.data,
+            cel = ((y * (imageData.width * 4)) + (x * 4)),
+            colorBin;
+
+        colorBin = data[cel + 0] << 24;
+        colorBin |= data[cel + 1] << 16;
+        colorBin |= data[cel + 2] << 8;
+
+        return colorBin;
+      },
+
       // setup our traversal iterations
       mungeImageData: function(imageData) {
         var data = imageData.data,
-            canvasHeight = imageData.height,
-            canvasWidth = imageData.width,
-            cel;
+            width = imageData.height,
+            height = imageData.width,
+            stack = [0, 0], //bootstrap search
+            perimeterX = [0, -1, +1, 0],
+            perimeterY = [-1, 0, 0, +1],
+            startColor = this.getColor(imageData, stack[0], stack[1]),
+            visited = {},
+            pixelCount = 0,
+            checkStartX, checkStartY, checkNextX, checkNextY, offset;
 
+        while (stack.length > 0) {
+          checkStartY = stack.pop();
+          checkStartX = stack.pop();
 
-        this.loopData(canvasHeight, canvasWidth, function(height, width) {
-          var cel = (width * canvasHeight + canvasWidth) * 4,
-              right = cel + 4,
-              left = cel - 4,
-              top = cel - width,
-              bottom = cel + width;
+          //loop 4x to check viable points around current
+          for (i=0; i < 4; i++) {
+            checkNextX = checkStartX + perimeterX[i];
+            checkNextY = checkStartY + perimeterY[i];
 
-          console.log("foo", cel);
-        });
-      },
+            //if out of range, skip test
+            if (checkNextX < 0 || checkNextY < 0 || checkNextX >= width
+                || checkNextY >= height) {
+              continue;
+            }
 
-      // traverse array, comparing all cels (array index * 4)
-      // in each step check adjacent pixels and compare color
-      // use a loop to prevent stack/memory issues
-      checkContiguous: function(r, g, b, a) {
-        var pixelStack = [[startX, startY]],
-            newPos, x, y, pixelPos, reachLeft, reachRight;
+            offset = (checkNextY * width + checkNextX) * 4;
 
-        // create array of position that we will use to anchor our traversals
-        // we will update the stack as we traverse to the next x,y to test
-        while (pixelStack.length) {
-          newPos = pixelStack.pop();
-          x = newPos[0];
-          y = newPos[1];
+            if (data[offset + 0] == ((startColor >> 24) & 0xFF)
+                && data[offset + 1] == ((startColor >> 16) & 0xFF)
+                && data[offset + 2] == ((startColor >> 8) & 0xFF)) {
+              stack.push(checkNextX);
+              stack.push(checkNextY);
 
-          pixelPos = (y * this.canvasWidth + x) * 4;
-
-          // this is non-working frankencode
-          // skeletons of ideas
-          //while (y >= drawingBoundTop && this.matchColor(prevColor, curColor)) {
-            //y -= 1;
-            //pixelPos -= canvasWidth * 4;
-          //}
-
-          //pixelPos += canvasWidth *4;
-          //y += 1;
-
-          //reachLeft = false;
-          //reachRight = false;
-
-          //while (y <= drawingBoundBottom && matchStartColor(pixelPos, startR, startG, startB)) {
-            //y += 1;
-
-            //this.countColor(pixelPos, {color: {r:startR, g:startG, b:startB}});
-
-            //if (x > drawingBoundLeft) {
-              //if (matchStartColor(pixelPos - 4, startR, startG, startB)) {
-                //if (!reachLeft) {
-                  //// Add pixel to stack
-                  //pixelStack.push([x - 1, y]);
-                  //reachLeft = true;
-                //}
-              //} else if (reachLeft) {
-                //reachLeft = false;
-              //}
-            //}
-
-            //if (x < drawingBoundRight) {
-              //if (matchStartColor(pixelPos + 4, startR, startG, startB)) {
-                //if (!reachRight) {
-                  //// Add pixel to stack
-                  //pixelStack.push([x + 1, y]);
-                  //reachRight = true;
-                //}
-              //} else if (reachRight) {
-                //reachRight = false;
-              //}
-            //}
-
-            //pixelPos += canvasWidth * 4;
-        //}
-
+              pixelCount++;
+            } else {
+              //if not matching, record x.y. for next color start
+            }
+          }
         }
-      },
 
-      // push cel counts and rgb data into an object
-      // we will index by pass#
-      countColor: function(pass, rgbData) {
-      },
+        console.log("count", pixelCount);
 
-      // test if colors match return bool
-      matchColor: function() {
       },
 
       getCanvasContext: function(width, height) {
