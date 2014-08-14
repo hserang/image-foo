@@ -94,13 +94,16 @@ define(
         var data = imageData.data,
             width = imageData.height,
             height = imageData.width,
-            stack = [0, 0], //bootstrap search
+            stack = [3, 3], //bootstrap search
             perimeterX = [0, -1, +1, 0],
             perimeterY = [-1, 0, 0, +1],
             startColor = this.getColor(imageData, stack[0], stack[1]),
             visited = {},
             pixelCount = 0,
             checkStartX, checkStartY, checkNextX, checkNextY, offset;
+
+
+        console.log("startColor RGB", (startColor>>24) & 0xFF, (startColor>>16) & 0xFF,(startColor>>8) & 0xFF);
 
         while (stack.length > 0) {
           checkStartY = stack.pop();
@@ -119,11 +122,17 @@ define(
 
             offset = (checkNextY * width + checkNextX) * 4;
 
-            if (data[offset + 0] == ((startColor >> 24) & 0xFF)
-                && data[offset + 1] == ((startColor >> 16) & 0xFF)
-                && data[offset + 2] == ((startColor >> 8) & 0xFF)) {
+            if (data[offset + 0] === ((startColor >> 24) & 0xFF)
+                  && data[offset + 1] === ((startColor >> 16) & 0xFF)
+                  && data[offset + 2] === ((startColor >> 8) & 0xFF)) {
               stack.push(checkNextX);
               stack.push(checkNextY);
+
+              if (pixelCount > 100000) {
+                console.log("color", data[offset + 0]);
+                console.log("pixelCount", pixelCount);
+                throw new Error("ooops, hard stop");
+              }
 
               pixelCount++;
             } else {
@@ -132,7 +141,7 @@ define(
           }
         }
 
-        console.log("count", pixelCount);
+        console.log("pixelCount", pixelCount);
 
       },
 
